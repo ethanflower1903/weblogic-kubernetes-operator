@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,6 +57,7 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
   private static final ThreadLocal<Fiber> CURRENT_FIBER = new ThreadLocal<>();
   /** Used to allocate unique number for each fiber. */
   private static final AtomicInteger iotaGen = new AtomicInteger();
+  public static final String DEBUG_FIBER = "DebugFiber";
   public final Engine owner;
   private final Fiber parent;
   private final int id;
@@ -316,7 +318,14 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
     Thread.interrupted();
   }
 
+  private void dumpDebugFiber() {
+    Optional.ofNullable(getPacket())
+          .map(p -> p.containsKey(DEBUG_FIBER))
+          .ifPresent(b -> LOGGER.info(getBreadCrumbString()));
+  }
+
   private void completionCheck() {
+    dumpDebugFiber();
     lock.lock();
     try {
       // Don't trigger completion and callbacks if fiber is suspended, unless

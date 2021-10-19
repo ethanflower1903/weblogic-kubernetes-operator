@@ -34,6 +34,7 @@ import oracle.kubernetes.operator.steps.DefaultResponseStep;
 import oracle.kubernetes.operator.steps.ManagedServersUpStep;
 import oracle.kubernetes.operator.steps.WatchDomainIntrospectorJobReadyStep;
 import oracle.kubernetes.operator.wlsconfig.WlsDomainConfig;
+import oracle.kubernetes.operator.work.Fiber;
 import oracle.kubernetes.operator.work.NextAction;
 import oracle.kubernetes.operator.work.Packet;
 import oracle.kubernetes.operator.work.Step;
@@ -443,6 +444,7 @@ public class JobHelper {
 
     @Override
     public NextAction apply(Packet packet) {
+      packet.put(Fiber.DEBUG_FIBER, "");
       return doNext(replaceOrCreateJob(packet, getNext()), packet);
     }
 
