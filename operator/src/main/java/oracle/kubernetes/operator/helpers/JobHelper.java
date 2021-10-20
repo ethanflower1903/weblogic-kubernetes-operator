@@ -787,6 +787,7 @@ public class JobHelper {
     }
 
     private void recordJobPodName(Packet packet, String podName) {
+      LOGGER.info("REG-> job pod name is " + podName);
       packet.put(ProcessingConstants.JOB_POD_NAME, podName);
     }
 

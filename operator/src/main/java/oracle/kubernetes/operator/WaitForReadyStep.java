@@ -175,8 +175,10 @@ abstract class WaitForReadyStep<T> extends Step {
   @Override
   public final NextAction apply(Packet packet) {
     if (shouldTerminateFiber(initialResource)) {
+      LOGGER.info("REG-> terminating fiber");
       return doTerminate(createTerminationException(initialResource), packet);
     } else if (isReady(initialResource)) {
+      LOGGER.info("REG-> exiting wait to next step: " + getNext().getName());
       return doNext(packet);
     }
 
