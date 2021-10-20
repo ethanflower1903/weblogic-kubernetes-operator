@@ -3,9 +3,12 @@
 
 package oracle.kubernetes.operator.work;
 
+import java.time.OffsetDateTime;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import oracle.kubernetes.utils.SystemClock;
 
 /**
  * Indicates what shall happen after {@link Step#apply(Packet)} returns.
@@ -18,11 +21,13 @@ public final class NextAction implements BreadCrumbFactory {
   Packet packet;
   Consumer<AsyncFiber> onExit;
   Throwable throwable;
+  private OffsetDateTime created;
 
   private void set(Kind k, Step v, Packet p) {
     this.kind = k;
     this.next = v;
     this.packet = p;
+    this.created = SystemClock.now();
   }
 
   /**
@@ -125,7 +130,7 @@ public final class NextAction implements BreadCrumbFactory {
         case INVOKE:
           if (na.next != null) {
             if (previousKind == Kind.INVOKE) {
-              sb.append(",");
+              sb.append("<at ").append(na.created).append(">, ");
             }
             sb.append(na.next.getName());
             dumper.dump(sb, na.packet);
@@ -133,7 +138,7 @@ public final class NextAction implements BreadCrumbFactory {
           break;
         case SUSPEND:
           if (previousKind != Kind.SUSPEND) {
-            sb.append("][");
+            sb.append("]...[");
           }
           break;
         case THROW:

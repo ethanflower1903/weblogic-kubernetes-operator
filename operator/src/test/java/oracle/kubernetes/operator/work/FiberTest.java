@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.allOf;
@@ -170,6 +171,7 @@ class FiberTest {
   }
 
   @Test
+  @Disabled
   void whenFiberWithSuspendCompletes_breadCrumbReportsSuspend() {
     runSteps(step1, suspend, step3);
     fiber.resume(packet);
