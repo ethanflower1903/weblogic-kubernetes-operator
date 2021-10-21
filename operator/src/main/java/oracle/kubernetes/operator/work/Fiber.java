@@ -4,6 +4,7 @@
 package oracle.kubernetes.operator.work;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import oracle.kubernetes.operator.logging.LoggingFacade;
 import oracle.kubernetes.operator.logging.LoggingFactory;
@@ -138,6 +140,15 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
     }
   }
 
+  private void logWithStack(String message, @Nullable String detail) {
+    LOGGER.info("REG-> " + message + getName() + Optional.ofNullable(detail).orElse("")
+          + '\n'
+          + Arrays.stream(Thread.currentThread().getStackTrace())
+          .limit(6)
+          .map(StackTraceElement::toString)
+          .collect(Collectors.joining("\n")));
+  }
+
   /**
    * Wakes up a suspended fiber. If a fiber was suspended without specifying the next {@link Step},
    * then the execution will be resumed, by calling the {@link Step#apply(Packet)} method on the
@@ -153,6 +164,7 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
    */
   @Override
   public void resume(Packet resumePacket) {
+    logWithStack("resuming fiber", getStatus());
     if (status.get() == NOT_COMPLETE) {
 
       if (LOGGER.isFinerEnabled()) {
@@ -184,6 +196,15 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
           owner.addRunnable(this);
         }
       }
+    }
+  }
+
+  private String getStatus() {
+    switch (status.get()) {
+      case NOT_COMPLETE: return "NOT_COMPLETE";
+      case DONE: return "DONE";
+      case CANCELLED: return "CANCELLED";
+      default: return "UNKNOWN: " + status.get();
     }
   }
 
