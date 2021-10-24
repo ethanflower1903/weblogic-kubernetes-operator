@@ -5,6 +5,7 @@ package oracle.kubernetes.operator.helpers;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -426,10 +427,51 @@ public class JobHelper {
                 readDomainIntrospectorPodLogStep(),
                 deleteDomainIntrospectorJobStep(null),
                 ConfigMapHelper.createIntrospectorConfigMapStep(getNext())),
-              packet);
+              packet).withDebugComment(packet, this::introspectionNeededReason);
       }
 
       return doNext(packet);
+    }
+
+    private String introspectionNeededReason(Packet packet) {
+      StringBuilder sb = new StringBuilder("introspection needed because ");
+      DomainPresenceInfo info = DomainPresenceInfo.fromPacket(packet).orElse(null);
+      if (packet.get(ProcessingConstants.DOMAIN_TOPOLOGY) == null) {
+        sb.append("domain topology is null");
+      } else if (isBringingUpNewDomain(packet, info)) {
+        sb.append("bringing up new domain");
+      } else {
+        sb.append("something else");
+      }
+      return sb.toString();
+    }
+
+    private String introspectionNotNeededReason(Packet packet) {
+      DomainPresenceInfo info = DomainPresenceInfo.fromPacket(packet).orElse(null);
+      StringBuilder sb = new StringBuilder("introspection not needed because ");
+      if (runningServersCount(info) != 0) {
+        sb.append("have running servers: ").append(String.join(", ", getRunningServerNames(info)));
+      } else if (!creatingServers(info)) {
+        sb.append("should not be creating servers");
+      } else {
+        sb.append("domain generation = ").append(getDomainGeneration(info))
+              .append(" and packet last generation is ").append(packet.get(INTROSPECTION_DOMAIN_SPEC_GENERATION));
+      }
+      return sb.toString();
+    }
+
+    @Nonnull
+    private Collection<String> getRunningServerNames(DomainPresenceInfo info) {
+      return Optional.ofNullable(info).map(DomainPresenceInfo::getServerNames).orElse(Collections.emptyList());
+    }
+
+    private String getDomainGeneration(DomainPresenceInfo info) {
+      return Optional.ofNullable(info)
+            .map(DomainPresenceInfo::getDomain)
+            .map(Domain::getMetadata)
+            .map(V1ObjectMeta::getGeneration)
+            .map(Object::toString)
+            .orElse("");
     }
   }
 
@@ -480,13 +522,19 @@ public class JobHelper {
                   ConfigMapHelper.createIntrospectorConfigMapStep(null),
                   ConfigMapHelper.readExistingIntrospectorConfigMap(namespace, info.getDomainUid()),
                   new DomainProcessorImpl.IntrospectionRequestStep(info),
-                  createDomainIntrospectorJobStep(getNext())), packet);
+                  createDomainIntrospectorJobStep(getNext())), packet).withDebugComment(job, this::foundJobDescription);
         } else {
           packet.putIfAbsent(START_TIME, OffsetDateTime.now());
           return doNext(Step.chain(
                   ConfigMapHelper.readExistingIntrospectorConfigMap(namespace, info.getDomainUid()),
                   createDomainIntrospectorJobStep(getNext())), packet);
         }
+      }
+
+      @Nonnull
+      private String foundJobDescription(@Nonnull V1Job job) {
+        return "found introspection job " + job.getMetadata().getName()
+                         + ", started at " + job.getMetadata().getCreationTimestamp();
       }
     }
   }
