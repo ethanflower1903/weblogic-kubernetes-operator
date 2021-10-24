@@ -606,7 +606,7 @@ public class DomainProcessorImpl implements DomainProcessor {
   }
 
   private void handleModifiedDomain(Domain domain) {
-    LOGGER.fine(MessageKeys.WATCH_DOMAIN, domain.getDomainUid());
+    LOGGER.info(MessageKeys.WATCH_DOMAIN, domain.getDomainUid());
     createMakeRightOperation(new DomainPresenceInfo(domain))
         .interrupt()
         .withEventData(EventItem.DOMAIN_CHANGED, null)

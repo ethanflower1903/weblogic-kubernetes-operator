@@ -66,6 +66,7 @@ public class JobHelper {
   private static final LoggingFacade LOGGER = LoggingFactory.getLogger("Operator", "Operator");
   static final String INTROSPECTOR_LOG_PREFIX = "Introspector Job Log: ";
   private static final String EOL_PATTERN = "\\r?\\n";
+  private static final String OLD_REQUEST = "lastIntrospectionRequest";
 
   private JobHelper() {
   }
@@ -108,6 +109,7 @@ public class JobHelper {
   }
 
   private static boolean checkIfIntrospectionRequestedAndReset(Packet packet) {
+    Optional.ofNullable(packet.get(DOMAIN_INTROSPECT_REQUESTED)).ifPresent(value -> packet.put(OLD_REQUEST, value));
     return packet.remove(DOMAIN_INTROSPECT_REQUESTED) != null;
   }
 
@@ -430,7 +432,7 @@ public class JobHelper {
               packet).withDebugComment(packet, this::introspectionNeededReason);
       }
 
-      return doNext(packet);
+      return doNext(packet).withDebugComment(packet, this::introspectionNotNeededReason);
     }
 
     private String introspectionNeededReason(Packet packet) {
@@ -440,6 +442,8 @@ public class JobHelper {
         sb.append("domain topology is null");
       } else if (isBringingUpNewDomain(packet, info)) {
         sb.append("bringing up new domain");
+      } else if (packet.get(OLD_REQUEST) != null) {
+        sb.append("introspection was specifically requested");
       } else {
         sb.append("something else");
       }
