@@ -33,7 +33,6 @@ import oracle.kubernetes.operator.calls.UnrecoverableErrorBuilder;
 import oracle.kubernetes.operator.logging.LoggingFacade;
 import oracle.kubernetes.operator.logging.LoggingFactory;
 import oracle.kubernetes.operator.utils.ChecksumUtils;
-import oracle.kubernetes.operator.work.Fiber;
 import oracle.kubernetes.operator.work.NextAction;
 import oracle.kubernetes.operator.work.Packet;
 import oracle.kubernetes.operator.work.Step;
@@ -57,7 +56,6 @@ public abstract class JobStepContext extends BasePodStepContext {
 
   JobStepContext(Packet packet) {
     super(packet.getSpi(DomainPresenceInfo.class));
-    packet.put(Fiber.DEBUG_FIBER, "REG->");
   }
 
   private static V1VolumeMount readOnlyVolumeMount(String volumeName, String mountPath) {
