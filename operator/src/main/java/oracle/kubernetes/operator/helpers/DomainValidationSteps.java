@@ -129,9 +129,10 @@ public class DomainValidationSteps {
     }
 
     private String domainValidated(Packet packet) {
-      return "Validated " + DomainPresenceInfo.fromPacket(packet).orElse(null);
+      return "Validated DPI: "
+            + DomainPresenceInfo.fromPacket(packet).map(System::identityHashCode).map(Integer::toHexString).orElse("?");
     }
-    
+
   }
 
   static class DomainAdditionalValidationStep extends Step {
