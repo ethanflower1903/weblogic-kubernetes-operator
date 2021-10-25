@@ -28,6 +28,7 @@ import oracle.kubernetes.operator.wlsconfig.WlsClusterConfig;
 import oracle.kubernetes.operator.wlsconfig.WlsDomainConfig;
 import oracle.kubernetes.operator.wlsconfig.WlsDynamicServersConfig;
 import oracle.kubernetes.operator.wlsconfig.WlsServerConfig;
+import oracle.kubernetes.operator.work.Fiber;
 import oracle.kubernetes.operator.work.NextAction;
 import oracle.kubernetes.operator.work.Packet;
 import oracle.kubernetes.operator.work.Step;
@@ -73,6 +74,7 @@ public class DomainValidationSteps {
     public NextAction onSuccess(Packet packet, CallResponse<V1SecretList> callResponse) {
       List<V1Secret> list = getSecrets(packet);
       list.addAll(callResponse.getResult().getItems());
+      packet.put(Fiber.DEBUG_FIBER, "REG->");
       packet.put(SECRETS, list);
 
       return doContinueListOrNext(callResponse, packet);

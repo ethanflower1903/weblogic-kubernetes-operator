@@ -1227,7 +1227,6 @@ public class DomainProcessorImpl implements DomainProcessor {
 
     @Override
     public NextAction apply(Packet packet) {
-      packet.put(Fiber.DEBUG_FIBER, "REG->");
       registerDomainPresenceInfo(info);
 
       if (lookForPodsAndServices()) {
