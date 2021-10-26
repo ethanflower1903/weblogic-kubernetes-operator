@@ -40,6 +40,7 @@ import oracle.kubernetes.operator.logging.LoggingFacade;
 import oracle.kubernetes.operator.logging.LoggingFactory;
 import oracle.kubernetes.operator.logging.MessageKeys;
 import oracle.kubernetes.operator.steps.DefaultResponseStep;
+import oracle.kubernetes.operator.work.Fiber;
 import oracle.kubernetes.operator.work.NextAction;
 import oracle.kubernetes.operator.work.Packet;
 import oracle.kubernetes.operator.work.Step;
@@ -150,6 +151,7 @@ public class CrdHelper {
 
     @Override
     public NextAction apply(Packet packet) {
+      packet.put(Fiber.DEBUG_FIBER, "REG-> (CRD)");
       return doNext(context.verifyCrd(getNext()), packet);
     }
   }
