@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1Secret;
+import io.kubernetes.client.util.Yaml;
 import oracle.weblogic.domain.DomainCondition;
 import oracle.weblogic.kubernetes.actions.impl.LoggingExporter;
 import oracle.weblogic.kubernetes.assertions.impl.Apache;
@@ -434,6 +435,7 @@ public class TestAssertions {
 
       if (domain != null && domain.getStatus() != null) {
         List<DomainCondition> domainConditionList = domain.getStatus().getConditions();
+        logger.info(Yaml.dump(domainConditionList));
         for (DomainCondition domainCondition : domainConditionList) {
           if (domainCondition.getType().equalsIgnoreCase(conditionType)) {
             return true;
@@ -471,6 +473,7 @@ public class TestAssertions {
 
       if (domain != null && domain.getStatus() != null) {
         List<DomainCondition> domainConditionList = domain.getStatus().getConditions();
+        logger.info(Yaml.dump(domainConditionList));
         for (DomainCondition domainCondition : domainConditionList) {
           if (domainCondition.getType().equalsIgnoreCase(conditionType)
               && domainCondition.getStatus().equalsIgnoreCase(expectedStatus)) {
@@ -531,7 +534,7 @@ public class TestAssertions {
    * @return true if the WebLogic administration service node port is accessible otherwise false
    * @throws java.io.IOException when connection to WebLogic administration server fails
    */
-  public static Callable<Boolean> adminNodePortAccessible(int nodePort, String userName, 
+  public static Callable<Boolean> adminNodePortAccessible(int nodePort, String userName,
                                                      String password, String... routeHost)
       throws IOException {
     if (routeHost.length == 0) {
