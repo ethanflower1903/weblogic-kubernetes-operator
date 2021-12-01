@@ -351,12 +351,26 @@ public class DomainStatusUpdater {
       DomainStatus newStatus = cloneStatus();
       modifyStatus(newStatus);
 
+      // REG-> figure this out
+      final DomainStatus old = cloneStatus();
+      for (DomainCondition oldCondition : old.getConditions()) {
+        for (DomainCondition newCondition : newStatus.getConditions()) {
+          if (isTimeChanged(oldCondition, newCondition)) {
+            LOGGER.warning("UHOH-> changed time of condition " + newCondition);
+          }
+        }
+      }
+
       if (newStatus.getMessage() == null) {
         newStatus.setMessage(
             Optional.ofNullable(info).map(DomainPresenceInfo::getValidationWarningsAsString).orElse(null));
       }
 
       return newStatus;
+    }
+
+    private boolean isTimeChanged(DomainCondition condition1, DomainCondition condition2) {
+      return condition1.equals(condition2) && condition1.getLastTransitionTime() != condition2.getLastTransitionTime();
     }
 
     String getDomainUid() {
@@ -554,7 +568,7 @@ public class DomainStatusUpdater {
         } else {
           status.removeConditionsMatching(c -> c.hasType(Failed) && ServerPod.name().equals(c.getReason()));
           if (newConditions.allIntendedServersRunning() && !stillHasPodPendingRestart(status)) {
-            status.removeConditionWithType(ConfigChangesPendingRestart);
+            status.removeConditionsWithType(ConfigChangesPendingRestart);
           }
         }
 
@@ -745,7 +759,7 @@ public class DomainStatusUpdater {
         DomainCondition onlineUpdateCondition
               = new DomainCondition(ConfigChangesPendingRestart).withMessage(message).withStatus(true);
 
-        status.removeConditionWithType(ConfigChangesPendingRestart);
+        status.removeConditionsWithType(ConfigChangesPendingRestart);
         status.addCondition(onlineUpdateCondition);
       }
 
@@ -999,7 +1013,7 @@ public class DomainStatusUpdater {
 
     @Override
     void modifyStatus(DomainStatus status) {
-      status.removeConditionWithType(Failed);
+      status.removeConditionsWithType(Failed);
     }
   }
 

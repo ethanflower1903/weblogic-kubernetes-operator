@@ -212,7 +212,7 @@ class DomainStatusTest {
     domainStatus.addCondition(new DomainCondition(Completed).withStatus("True").withMessage("Got 'em all"));
     domainStatus.addCondition(new DomainCondition(Available).withStatus("True"));
 
-    domainStatus.removeConditionWithType(Failed);
+    domainStatus.removeConditionsWithType(Failed);
 
     assertThat(domainStatus.getMessage(), equalTo("Got 'em all"));
     assertThat(domainStatus.getReason(), nullValue());
@@ -224,7 +224,7 @@ class DomainStatusTest {
     domainStatus.addCondition(new DomainCondition(Completed).withStatus("True"));
     domainStatus.addCondition(new DomainCondition(Available).withStatus("True"));
 
-    domainStatus.removeConditionWithType(Failed);
+    domainStatus.removeConditionsWithType(Failed);
 
     assertThat(domainStatus.getMessage(), nullValue());
     assertThat(domainStatus.getReason(), nullValue());

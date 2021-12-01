@@ -1357,7 +1357,7 @@ public class DomainProcessorImpl implements DomainProcessor {
               ProcessingConstants.DOMAIN_COMPONENT_NAME,
               Component.createFor(delegate.getKubernetesVersion()));
       packet.put(LoggingFilter.LOGGING_FILTER_PACKET_KEY, loggingFilter);
-      packet.put(Fiber.DEBUG_FIBER, "REG->");
+      packet.put(Fiber.DEBUG_FIBER, "SCHED->");
       return packet;
     }
 
