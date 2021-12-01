@@ -356,7 +356,8 @@ public class DomainStatusUpdater {
       for (DomainCondition oldCondition : old.getConditions()) {
         for (DomainCondition newCondition : newStatus.getConditions()) {
           if (isTimeChanged(oldCondition, newCondition)) {
-            LOGGER.warning("UHOH-> changed time of condition " + newCondition + getStackTrace());
+            LOGGER.warning("UHOH-> changed time of condition " + newCondition
+                  + " in " + domainStatusUpdaterStep.getClass());
           }
         }
       }
@@ -367,12 +368,6 @@ public class DomainStatusUpdater {
       }
 
       return newStatus;
-    }
-
-    private String getStackTrace() {
-      return System.lineSeparator() + Arrays.stream(Thread.currentThread().getStackTrace())
-            .map(StackTraceElement::toString)
-            .collect(Collectors.joining(System.lineSeparator()));
     }
 
     private boolean isTimeChanged(DomainCondition condition1, DomainCondition condition2) {
