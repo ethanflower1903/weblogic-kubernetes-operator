@@ -588,6 +588,8 @@ public class DomainStatusUpdater {
         private final List<DomainCondition> conditions = new ArrayList<>();
 
         void apply(DomainStatus status) {
+          LOGGER.info("DETAIL-> before " + status.getConditions());
+          LOGGER.info("DETAIL-> adding " + conditions);
           status.removeConditionsMatching(c -> c.hasType(Failed) && ReplicasTooHigh.name().equals(c.getReason()));
           conditions.forEach(status::addCondition);
         }
