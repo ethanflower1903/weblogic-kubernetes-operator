@@ -356,7 +356,8 @@ public class DomainStatusUpdater {
       for (DomainCondition oldCondition : old.getConditions()) {
         for (DomainCondition newCondition : newStatus.getConditions()) {
           if (isTimeChanged(oldCondition, newCondition)) {
-            LOGGER.warning("UHOH-> changed time of condition " + newCondition
+            LOGGER.warning("UHOH-> changed time of condition " + oldCondition
+                  + " to " + newCondition.getLastTransitionTime()
                   + " in " + domainStatusUpdaterStep.getClass());
           }
         }
