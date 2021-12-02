@@ -372,7 +372,8 @@ public class DomainStatusUpdater {
     }
 
     private boolean isTimeChanged(DomainCondition condition1, DomainCondition condition2) {
-      return condition1.equals(condition2) && condition1.getLastTransitionTime() != condition2.getLastTransitionTime();
+      return condition1.equals(condition2)
+            && !condition1.getLastTransitionTime().equals(condition2.getLastTransitionTime());
     }
 
     String getDomainUid() {
@@ -623,6 +624,9 @@ public class DomainStatusUpdater {
         }
 
         public Conditions() {
+          if (isProcessingCompleted()) {
+            LOGGER.info("HUH-> complete/true with count " + getDomain().getReplicaCount("cluster-1"));
+          }
           conditions.add(new DomainCondition(Completed).withStatus(isProcessingCompleted()));
           conditions.add(new DomainCondition(Available).withStatus(sufficientServersRunning()));
           computeTooManyReplicasFailures();
