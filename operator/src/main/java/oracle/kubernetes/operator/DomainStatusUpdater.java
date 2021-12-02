@@ -625,8 +625,13 @@ public class DomainStatusUpdater {
 
         public Conditions() {
           if (isProcessingCompleted()) {
-            LOGGER.info("HUH-> complete/true with count " + getDomain().getReplicaCount("cluster-1"));
+            LOGGER.info("HUH-> complete/true with count "
+                  + getDomain().getReplicaCount("cluster-1")
+                  + " with " + clusterChecks.length + " clusters");
             Arrays.stream(clusterChecks).forEach(ClusterCheck::logCompletedReason);
+          } else {
+            LOGGER.info("HUH-> complete/false"
+                  + " with " + clusterChecks.length + " clusters");
           }
           conditions.add(new DomainCondition(Completed).withStatus(isProcessingCompleted()));
           conditions.add(new DomainCondition(Available).withStatus(sufficientServersRunning()));
