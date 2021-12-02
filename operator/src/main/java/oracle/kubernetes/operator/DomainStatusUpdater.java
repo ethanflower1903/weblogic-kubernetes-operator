@@ -626,6 +626,7 @@ public class DomainStatusUpdater {
         public Conditions() {
           if (isProcessingCompleted()) {
             LOGGER.info("HUH-> complete/true with count " + getDomain().getReplicaCount("cluster-1"));
+            Arrays.stream(clusterChecks).forEach(ClusterCheck::logCompletedReason);
           }
           conditions.add(new DomainCondition(Completed).withStatus(isProcessingCompleted()));
           conditions.add(new DomainCondition(Available).withStatus(sufficientServersRunning()));
@@ -675,6 +676,10 @@ public class DomainStatusUpdater {
           maxReplicaCount = cluster.getMaxClusterSize();
           specifiedReplicaCount = getDomain().getReplicaCount(clusterName);
           startedServers = getStartedServersInCluster(clusterName);
+        }
+
+        void logCompletedReason() {
+          LOGGER.info("HUH-> specified = " + specifiedReplicaCount + ", max = " + maxReplicaCount);
         }
 
         boolean isAvailable() {
