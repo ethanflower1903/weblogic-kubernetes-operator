@@ -6,6 +6,7 @@ package oracle.kubernetes.operator.helpers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,8 +15,6 @@ import oracle.kubernetes.operator.logging.LoggingFacade;
 import oracle.kubernetes.operator.logging.LoggingFactory;
 import oracle.kubernetes.operator.logging.MessageKeys;
 import oracle.kubernetes.operator.wlsconfig.WlsDomainConfig;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Domain topology.
@@ -29,11 +28,6 @@ public class DomainTopology {
 
   @SuppressWarnings("unused") // Used by parser
   public DomainTopology() {
-  }
-
-  public DomainTopology(WlsDomainConfig domain) {
-    this.domain = domain;
-    this.domainValid = true;
   }
 
   /**
@@ -61,10 +55,12 @@ public class DomainTopology {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     try {
+      LOGGER.info("REG-> yaml: " + topologyYaml);
       DomainTopology domainTopology = mapper.readValue(topologyYaml, DomainTopology.class);
-
-      LOGGER.fine(
-          ReflectionToStringBuilder.toString(domainTopology, ToStringStyle.MULTI_LINE_STYLE));
+      Optional.ofNullable(domainTopology)
+            .map(DomainTopology::getDomain)
+            .map(WlsDomainConfig::getName)
+            .ifPresent(name -> LOGGER.info("REG-> domain name: " + name));
 
       return domainTopology;
 
@@ -95,7 +91,7 @@ public class DomainTopology {
 
 
   public WlsDomainConfig getDomain() {
-    this.domain.processDynamicClusters();
+    Optional.ofNullable(domain).ifPresent(WlsDomainConfig::processDynamicClusters);
     return this.domain;
   }
 

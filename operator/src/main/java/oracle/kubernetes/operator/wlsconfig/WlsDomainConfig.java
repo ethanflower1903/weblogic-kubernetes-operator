@@ -167,13 +167,11 @@ public class WlsDomainConfig implements WlsDomain {
    */
   @SuppressWarnings("unchecked")
   private static ParsedJson parseJson(String jsonString) {
-    LOGGER.info("REG-> json is " + jsonString);
     ObjectMapper mapper = new ObjectMapper();
     try {
       ParsedJson parsedJson = new ParsedJson();
       Map<String,Object> result = mapper.readValue(jsonString, Map.class);
       parsedJson.domainName = (String) result.get("name");
-      LOGGER.info("REG-> domainName is " + parsedJson.domainName);
       parsedJson.adminServerName = (String) result.get("adminServerName");
       Map<String,Object> servers = (Map<String, Object>) result.get("servers");
       if (servers != null) {
