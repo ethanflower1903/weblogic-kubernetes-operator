@@ -398,7 +398,7 @@ public class JobHelper {
       }
 
       private void processIntrospectionResult(Packet packet, String result) {
-        LOGGER.fine("+++++ ReadDomainIntrospectorPodLogResponseStep: \n" + result);
+        LOGGER.info("REG-> +++++ ReadDomainIntrospectorPodLogResponseStep: \n" + result);
         convertJobLogsToOperatorLogs(result);
         if (!severeStatuses.isEmpty()) {
           updateStatusSynchronously();
