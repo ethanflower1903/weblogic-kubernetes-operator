@@ -7,7 +7,7 @@ domainInfo:
     ServerStartMode: 'prod'
 
 topology:
-    Name: 'DOMAIN_NAME'
+    Name: "wls-sessmigr-domain-1"
     AdminServerName: "admin-server"
     Cluster:
         "cluster-1":
