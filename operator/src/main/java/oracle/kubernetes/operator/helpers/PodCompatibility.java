@@ -124,17 +124,15 @@ class PodCompatibility extends CollectiveCompatibility {
     PodSpecCompatibility(V1PodSpec expected, V1PodSpec actual) {
       LOGGER.info("REG-> creating pod spec compatibility");
       add("securityContext", expected.getSecurityContext(), actual.getSecurityContext());
-      LOGGER.info("REG-> added security context");
+      LOGGER.info("REG-> added security context to compare " + expected.getSecurityContext()
+            + " and " + actual.getSecurityContext());
       add(
           new CompatibleMaps<>(
               "nodeSelector", expected.getNodeSelector(), actual.getNodeSelector()));
-      LOGGER.info("REG-> added nodeSelectors");
       addSets("volumes", expected.getVolumes(), actual.getVolumes());
-      LOGGER.info("REG-> added volumes");
       addSets("imagePullSecrets", expected.getImagePullSecrets(), actual.getImagePullSecrets());
-      LOGGER.info("REG-> added image pull secrets");
       addContainerChecks(expected.getContainers(), actual.getContainers());
-      LOGGER.info("REG-> added containers. Result is " + this.isCompatible());
+      LOGGER.info("REG-> Result is " + this.isCompatible());
     }
 
     private void addContainerChecks(
