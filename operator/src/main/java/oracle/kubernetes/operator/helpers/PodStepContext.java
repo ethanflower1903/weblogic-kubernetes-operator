@@ -523,18 +523,21 @@ public abstract class PodStepContext extends BasePodStepContext {
 
   private String getDomainIncompatibility(V1Pod pod) {
     String domainIncompatibility = getReasonToRecycle(pod, DOMAIN);
+    LOGGER.info("REG-> domain incompatibility = " + domainIncompatibility);
     if (!haveReasonsToRoll(domainIncompatibility)
         && haveReasonsToRoll(getReasonToRecycle(pod, UNKNOWN))) {
       domainIncompatibility = ROLL_REASON_DOMAIN_RESOURCE_CHANGED;
     }
 
     if (!canUseNewDomainZip(pod)) {
+      LOGGER.info("REG-> cannot use domain zip");
       if (haveReasonsToRoll(domainIncompatibility)) {
         domainIncompatibility += ",\n" + ROLL_REASON_WEBLOGIC_CONFIGURATION_CHANGED;
       } else {
         domainIncompatibility = ROLL_REASON_WEBLOGIC_CONFIGURATION_CHANGED;
       }
     }
+    LOGGER.info("REG-> conclusion = " + domainIncompatibility);
     return domainIncompatibility;
   }
 

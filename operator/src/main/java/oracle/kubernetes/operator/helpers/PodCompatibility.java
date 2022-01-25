@@ -133,6 +133,9 @@ class PodCompatibility extends CollectiveCompatibility {
       addSets("imagePullSecrets", expected.getImagePullSecrets(), actual.getImagePullSecrets());
       addContainerChecks(expected.getContainers(), actual.getContainers());
       LOGGER.info("REG-> Result is " + this.isCompatible());
+      if (!this.isCompatible()) {
+        LOGGER.info("REG-> reason is " + this.getIncompatibility());
+      }
     }
 
     private void addContainerChecks(
