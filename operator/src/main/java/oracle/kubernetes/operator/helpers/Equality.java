@@ -7,7 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import io.kubernetes.client.openapi.models.V1SecurityContext;
+import oracle.kubernetes.operator.logging.LoggingFacade;
+import oracle.kubernetes.operator.logging.LoggingFactory;
+
 class Equality implements CompatibilityCheck {
+  private static final LoggingFacade LOGGER = LoggingFactory.getLogger("Operator", "Operator");
+
   private static final List<String> DOMAIN_FIELDS = Arrays.asList("image", "imagePullPolicy");
 
   private final String description;
@@ -22,6 +28,17 @@ class Equality implements CompatibilityCheck {
 
   @Override
   public boolean isCompatible() {
+    if (expected instanceof V1SecurityContext) {
+      LOGGER.info("REG-> expected " + System.identityHashCode(expected));
+      LOGGER.info("REG-> actual " + System.identityHashCode(actual));
+      LOGGER.info("REG-> comparing runAsUser: "
+            + ((V1SecurityContext)expected).getRunAsUser()
+            + " vs "
+            + ((V1SecurityContext)actual).getRunAsUser()
+            + "which are "
+            + (Objects.equals(expected, actual) ? "" : " not ")
+            + "equal");
+    }
     return Objects.equals(expected, actual);
   }
 
