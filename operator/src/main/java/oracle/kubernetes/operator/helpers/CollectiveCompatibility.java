@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import oracle.kubernetes.operator.logging.LoggingFacade;
+import oracle.kubernetes.operator.logging.LoggingFactory;
+
 abstract class CollectiveCompatibility implements CompatibilityCheck {
+  private static final LoggingFacade LOGGER = LoggingFactory.getLogger("Operator", "Operator");
+
   protected final List<CompatibilityCheck> checks = new ArrayList<>();
 
   void add(CompatibilityCheck check) {
@@ -38,6 +43,7 @@ abstract class CollectiveCompatibility implements CompatibilityCheck {
     final List<String> reasons = new ArrayList<>();
     for (CompatibilityCheck check : checks) {
       if (!check.isCompatible()) {
+        LOGGER.info("REG-> found incompatibility in " + check);
         reasons.add(getIndent() + check.getIncompatibility());
       }
     }
