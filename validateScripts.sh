@@ -28,5 +28,4 @@ done
 
 found_error=$?
 
-exit $found_error
 
