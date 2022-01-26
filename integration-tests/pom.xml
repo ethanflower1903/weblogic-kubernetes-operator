@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2020, 2021, Oracle and/or its affiliates.
+<!-- Copyright (c) 2020, 2022, Oracle and/or its affiliates.
      Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl. -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -193,6 +193,22 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate-shell-scripts</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/../validateScripts.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -354,7 +370,10 @@
                   **/ItCoherenceTests,
                   **/ItConfigDistributionStrategy,
                   **/ItDedicatedMode,
+                  **/ItDiagnosticsCompleteAvailableCondition,
+                  **/ItDiagnosticsFailedCondition,
                   **/ItElasticLogging,
+                  **/ItElasticLoggingFluentd,
                   **/ItExternalLbTunneling,
                   **/ItExternalNodePortService,
                   **/ItInitContainers,
@@ -371,6 +390,7 @@
                   **/ItMiiDomainModelInPV,
                   **/ItMiiDynamicUpdate*,
                   **/ItMiiMultiModel,
+                  **/ItMiiNewCreateAuxImage,
                   **/ItMiiSampleWlsAux,
                   **/ItMiiSampleWlsMain,
                   **/ItMiiServiceMigration,
@@ -383,11 +403,14 @@
                   **/ItProductionSecureMode,
                   **/ItRemoteConsole,
                   **/ItServerStartPolicy,
-		  **/ItServiceStartPolicyDynamicCluster,
+		          **/ItServiceStartPolicyDynamicCluster,
                   **/ItServerStartPolicyConfigCluster,
                   **/ItSessionMigration,
                   **/ItStickySession,
                   **/ItSystemResOverrides,
+                  **/ItMonitoringExporterWebApp,
+                  **/ItMonitoringExporterSideCar,
+                  **/ItMonitoringExporterSamples,
                   **/ItUsabilityOperatorHelmChart
                 </includes-failsafe>
             </properties>
