@@ -66,4 +66,8 @@ class Equality implements CompatibilityCheck {
     return CompatibilityScope.POD;
   }
 
+  @Override
+  public String toString() {
+    return "Equality of " + description;
+  }
 }
