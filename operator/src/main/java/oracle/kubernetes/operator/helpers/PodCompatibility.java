@@ -20,6 +20,8 @@ import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodSpec;
 import io.kubernetes.client.openapi.models.V1Probe;
 import io.kubernetes.client.openapi.models.V1ResourceRequirements;
+import oracle.kubernetes.operator.logging.LoggingFacade;
+import oracle.kubernetes.operator.logging.LoggingFactory;
 
 import static oracle.kubernetes.operator.LabelConstants.CLUSTERRESTARTVERSION_LABEL;
 import static oracle.kubernetes.operator.LabelConstants.DOMAINRESTARTVERSION_LABEL;
@@ -28,6 +30,8 @@ import static oracle.kubernetes.operator.helpers.PodHelper.AdminPodStepContext.I
 
 /** A class which defines the compatibility rules for existing vs. specified pods. */
 class PodCompatibility extends CollectiveCompatibility {
+  private static final LoggingFacade LOGGER = LoggingFactory.getLogger("Operator", "Operator");
+  
   PodCompatibility(V1Pod expected, V1Pod actual) {
     add(new PodMetadataCompatibility(expected.getMetadata(), actual.getMetadata()));
     add(new PodSpecCompatibility(Objects.requireNonNull(expected.getSpec()), Objects.requireNonNull(actual.getSpec())));
@@ -118,6 +122,9 @@ class PodCompatibility extends CollectiveCompatibility {
   static class PodSpecCompatibility extends CollectiveCompatibility {
 
     PodSpecCompatibility(V1PodSpec expected, V1PodSpec actual) {
+      if (!Objects.equals(expected.getSecurityContext(), actual.getSecurityContext())) {
+        LOGGER.info("REG-> changed security context");
+      }
       add("securityContext", expected.getSecurityContext(), actual.getSecurityContext());
       add(
           new CompatibleMaps<>(

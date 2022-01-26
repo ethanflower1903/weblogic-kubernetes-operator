@@ -512,8 +512,11 @@ public abstract class PodStepContext extends BasePodStepContext {
     }
 
     String domainIncompatibility = getDomainIncompatibility(pod);
+    LOGGER.info("REG-> incompatibility = [" + domainIncompatibility + "]");
     if (haveReasonsToRoll(domainIncompatibility)) {
       return createDomainRollStartEvent(next, domainIncompatibility);
+    } else {
+      LOGGER.info("REG-> not generating an event");
     }
 
     return next;
@@ -668,6 +671,8 @@ public abstract class PodStepContext extends BasePodStepContext {
 
   protected String getReasonToRecycle(V1Pod currentPod, CompatibilityScope scope) {
     PodCompatibility compatibility = new PodCompatibility(getPodModel(), currentPod);
+    LOGGER.info("REG-> compatibility is " + compatibility);
+    LOGGER.info("REG-> compatibility for scope " + scope + " is " + compatibility.getScopedIncompatibility(scope));
     return compatibility.getScopedIncompatibility(scope);
   }
 
