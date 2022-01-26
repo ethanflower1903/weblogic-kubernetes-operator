@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import io.kubernetes.client.openapi.models.V1SecurityContext;
 import oracle.kubernetes.operator.logging.LoggingFacade;
 import oracle.kubernetes.operator.logging.LoggingFactory;
 
@@ -28,20 +27,6 @@ class Equality implements CompatibilityCheck {
 
   @Override
   public boolean isCompatible() {
-    if (expected instanceof V1SecurityContext) {
-      try {
-        LOGGER.info("REG-> expected " + expected);
-        LOGGER.info("REG-> actual " + actual);
-
-        String message = String.format("REG-> comparing runAsUser fields %d vs %d which are %s equal",
-              ((V1SecurityContext)expected).getRunAsUser(),
-              ((V1SecurityContext)actual).getRunAsUser(),
-              (Objects.equals(expected, actual) ? "" : "NOT"));
-        LOGGER.info(message);
-      } catch (Throwable e) {
-        LOGGER.info("REG-> exception on compare: " + e);
-      }
-    }
     return Objects.equals(expected, actual);
   }
 

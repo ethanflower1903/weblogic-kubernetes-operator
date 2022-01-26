@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import io.kubernetes.client.openapi.models.V1EnvVar;
+import oracle.kubernetes.operator.logging.LoggingFacade;
+import oracle.kubernetes.operator.logging.LoggingFactory;
 
 import static oracle.kubernetes.operator.helpers.PodCompatibility.getMissingElements;
 import static oracle.kubernetes.weblogic.domain.model.ServerEnvVars.DOMAIN_HOME;
@@ -21,6 +23,8 @@ import static oracle.kubernetes.weblogic.domain.model.ServerEnvVars.LOG_HOME;
 import static oracle.kubernetes.weblogic.domain.model.ServerEnvVars.SERVER_OUT_IN_POD_LOG;
 
 class CompatibleMaps<K, V> implements CompatibilityCheck {
+  private static final LoggingFacade LOGGER = LoggingFactory.getLogger("Operator", "Operator");
+
   private static final List<String> DOMAIN_FIELDS = Collections.singletonList("env");
   private static final List<String> DOMAIN_ENV_KEYS = Arrays.asList(LOG_HOME, SERVER_OUT_IN_POD_LOG, DOMAIN_HOME);
   private static final HashMap<String, String> ELEMENT_NAMES_MAP = new HashMap<>();
@@ -46,6 +50,7 @@ class CompatibleMaps<K, V> implements CompatibilityCheck {
   public boolean isCompatible() {
     for (K key : expected.keySet()) {
       if (isKeyToCheck(key) && isIncompatible(key)) {
+        LOGGER.info("REG-> incompatible key: " + key);
         return false;
       }
     }
