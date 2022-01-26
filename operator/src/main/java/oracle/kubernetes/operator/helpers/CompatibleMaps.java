@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.kubernetes.client.openapi.models.V1EnvVar;
 import oracle.kubernetes.operator.logging.LoggingFacade;
@@ -48,13 +49,18 @@ class CompatibleMaps<K, V> implements CompatibilityCheck {
 
   @Override
   public boolean isCompatible() {
-    for (K key : expected.keySet()) {
-      if (isKeyToCheck(key) && isIncompatible(key)) {
-        LOGGER.info("REG-> incompatible key: " + key);
-        return false;
-      }
+    final String incompatibleKeys
+          = expected.keySet().stream()
+          .filter(this::isKeyToCheck)
+          .filter(this::isIncompatible)
+          .map(Object::toString)
+          .collect(Collectors.joining(","));
+
+    if (!incompatibleKeys.isEmpty()) {
+      final String msg = "REG-> incompatible keys " + incompatibleKeys;
+      LOGGER.info(msg);
     }
-    return true;
+    return incompatibleKeys.isEmpty();
   }
 
   private boolean isKeyToCheck(K key) {
