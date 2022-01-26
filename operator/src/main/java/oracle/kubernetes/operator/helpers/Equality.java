@@ -29,15 +29,18 @@ class Equality implements CompatibilityCheck {
   @Override
   public boolean isCompatible() {
     if (expected instanceof V1SecurityContext) {
-      LOGGER.info("REG-> expected " + System.identityHashCode(expected));
-      LOGGER.info("REG-> actual " + System.identityHashCode(actual));
-      LOGGER.info("REG-> comparing runAsUser: "
-            + ((V1SecurityContext)expected).getRunAsUser()
-            + " vs "
-            + ((V1SecurityContext)actual).getRunAsUser()
-            + "which are "
-            + (Objects.equals(expected, actual) ? "" : " not ")
-            + "equal");
+      try {
+        LOGGER.info("REG-> expected " + expected);
+        LOGGER.info("REG-> actual " + actual);
+
+        String message = String.format("REG-> comparing runAsUser fields %d vs %d which are %s equal",
+              ((V1SecurityContext)expected).getRunAsUser(),
+              ((V1SecurityContext)actual).getRunAsUser(),
+              (Objects.equals(expected, actual) ? "" : "NOT"));
+        LOGGER.info(message);
+      } catch (Throwable e) {
+        LOGGER.info("REG-> exception on compare: " + e);
+      }
     }
     return Objects.equals(expected, actual);
   }
